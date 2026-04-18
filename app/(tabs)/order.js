@@ -148,22 +148,32 @@ export default function OrderScreen() {
                 <OrderCard
                   key={order.id}
                   order={order}
-                  onPress={() =>
+                  onPress={() => {
+                    // Harga final jika sudah dibayar, atau estimasi jika belum
+                    const displayPrice = order.finalPrice
+                      ? String(order.finalPrice)
+                      : order.price.replace(/[^0-9]/g, '');
                     router.push({
                       pathname: '/receipt',
                       params: {
                         serviceName: order.businessName,
-                        totalPrice: order.price.replace(/[^0-9]/g, ''),
-                        pricePerUnit: '0',
-                        unit: '/kilo',
+                        totalPrice: displayPrice,
+                        pricePerUnit: String(order.pricePerUnit || 0),
+                        unit: order.unit || '/kilo',
                         amount: String(order.items),
-                        serviceTotal: order.price.replace(/[^0-9]/g, ''),
-                        deliveryFee: '0',
-                        isPickup: 'false',
+                        serviceTotal: displayPrice,
+                        deliveryFee: String(order.deliveryFee || 0),
+                        expressFee: String(order.expressFee || 0),
+                        isPickup: String(order.isPickup || false),
+                        isExpress: String(order.isExpress || false),
                         fromHistory: 'true',
+                        isCompleted: 'true',
+                        paymentMethod: order.paymentMethod || '',
+                        realWeight: String(order.realWeight || order.items),
+                        pickupAddress: order.pickupAddress || '',
                       },
-                    })
-                  }
+                    });
+                  }}
                 />
               ))}
             </>

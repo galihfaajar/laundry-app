@@ -98,6 +98,9 @@ export default function ReceiptScreen() {
   
   // Dibuka dari riwayat (bukan dari checkout baru)
   const fromHistory   = params.fromHistory === 'true';
+  const isCompleted   = params.isCompleted === 'true';
+  const paymentMethod = params.paymentMethod || '';
+  const realWeight    = parseFloat(params.realWeight) || amount;
 
   // Tanggal & nomor pesanan
   const now     = new Date();
@@ -124,15 +127,27 @@ export default function ReceiptScreen() {
         contentContainerStyle={{ paddingBottom: 24 }}
       >
         {/* ─── Badge Status Pesanan ─── */}
-        <View style={styles.weighingPendingBanner}>
-          <Ionicons name="scale-outline" size={18} color="#D97706" />
-          <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text style={styles.weighingPendingTitle}>Menunggu Penimbangan</Text>
-            <Text style={styles.weighingPendingText}>
-              Petugas akan menimbang cucian dan mengirim konfirmasi berat + harga final ke notifikasi kamu. Pembayaran dilakukan setelah itu.
-            </Text>
+        {isCompleted ? (
+          <View style={styles.completedBanner}>
+            <Ionicons name="checkmark-circle" size={18} color="#16A34A" />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.completedTitle}>Pesanan Selesai 🎉</Text>
+              <Text style={styles.completedText}>
+                {paymentMethod ? `Dibayar via ${paymentMethod}.` : ''}{' '}Terima kasih telah menggunakan Kinclong Laundry!
+              </Text>
+            </View>
           </View>
-        </View>
+        ) : (
+          <View style={styles.weighingPendingBanner}>
+            <Ionicons name="scale-outline" size={18} color="#D97706" />
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.weighingPendingTitle}>Menunggu Penimbangan</Text>
+              <Text style={styles.weighingPendingText}>
+                Petugas akan menimbang cucian dan mengirim konfirmasi berat + harga final ke notifikasi kamu. Pembayaran dilakukan setelah itu.
+              </Text>
+            </View>
+          </View>
+        )}
 
         {/* ─── Kartu Struk ─── */}
         <View style={styles.receiptCard}>
@@ -145,11 +160,15 @@ export default function ReceiptScreen() {
               <Text style={styles.receiptBizName}>Kinclong Laundry</Text>
               <Text style={styles.receiptDate}>{dateStr} · {timeStr}</Text>
             </View>
-            <View style={[styles.statusPill, styles.statusPillPending]}>
-              <Text style={[styles.statusPillText, { color: '#D97706' }]}>
-                Menunggu Timbang
-              </Text>
-            </View>
+            {isCompleted ? (
+              <View style={[styles.statusPill, styles.statusPillDone]}>
+                <Text style={[styles.statusPillText, { color: '#16A34A' }]}>Selesai</Text>
+              </View>
+            ) : (
+              <View style={[styles.statusPill, styles.statusPillPending]}>
+                <Text style={[styles.statusPillText, { color: '#D97706' }]}>Menunggu Timbang</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.divider} />
@@ -296,6 +315,8 @@ export default function ReceiptScreen() {
                   pricePerUnit,
                   expressFee,
                   deliveryFee,
+                  isPickup,
+                  pickupAddress,
                   selectedServices: [serviceName],
                 },
                 null,
@@ -411,6 +432,10 @@ const useStyles = (Colors) => StyleSheet.create({
     backgroundColor: '#D9770620',
     borderColor: '#D9770650',
   },
+  statusPillDone: {
+    backgroundColor: '#16A34A20',
+    borderColor: '#16A34A50',
+  },
   statusPillText: { color: Colors.accent, fontSize: 11, fontWeight: '700' },
 
   divider: { height: 1, backgroundColor: Colors.border, marginVertical: 16 },
@@ -433,6 +458,28 @@ const useStyles = (Colors) => StyleSheet.create({
     marginBottom: 4,
   },
   weighingPendingText: {
+    color: Colors.textSecondary,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+
+  completedBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#16A34A15',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#16A34A40',
+  },
+  completedTitle: {
+    color: '#16A34A',
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  completedText: {
     color: Colors.textSecondary,
     fontSize: 12,
     lineHeight: 18,

@@ -45,6 +45,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="notifications"
+        options={{
+          title: 'Notifikasi',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="notifications-outline" size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="message"
         options={{
           title: 'Pesan',

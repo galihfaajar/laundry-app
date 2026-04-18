@@ -278,6 +278,14 @@ export function startOrderSimulation(orderData, onDone) {
     paid: false,        // diisi saat customer bayar di track-order
     paymentMethod: null,
     image: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=200&q=80',
+    // Data asli untuk struk:
+    deliveryFee: orderData.deliveryFee || 0,
+    expressFee: orderData.expressFee || 0,
+    isExpress: orderData.expressFee > 0,
+    isPickup: orderData.deliveryFee > 0,
+    unit: orderData.unit || '/kilo',
+    pricePerUnit: orderData.pricePerUnit || 8000,
+    pickupAddress: orderData.pickupAddress || '',
   };
   orderHistory.unshift(newOrderHistoryEntry);
   _notify();

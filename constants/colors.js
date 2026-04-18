@@ -1,9 +1,9 @@
 export const Colors = {
-  bg: '#F8FAFC',          // Abu-abu sangat terang (Slate 50)
-  card: '#FFFFFF',        // Putih murni
-  accent: '#38BDF8',      // Ocean Blue cerah (Sky 400) - Teks hitam tetap terbaca
-  textPrimary: '#0F172A', // Hitam/Slate pekat
-  textSecondary: '#64748B',// Abu-abu netral
-  border: '#E2E8F0',      // Garis tepi halus
+  bg: '#1A1F1A',           // Background sangat gelap dengan semburat hijau
+  card: '#222822',         // Warna dasar komponen (kartu)
+  accent: '#C5E636',       // Aksen Hijau/Lime cerah
+  textPrimary: '#FFFFFF',  // Teks utama putih
+  textSecondary: '#A0A89A',// Teks deskripsi / sekunder
+  border: '#2E332E',       // Garis border pemisah
   accentText: '#000000',
 };

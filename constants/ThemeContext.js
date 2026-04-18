@@ -38,7 +38,7 @@ const lightTheme = {
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Baca preferensi tema dari AsyncStorage saat app dibuka
