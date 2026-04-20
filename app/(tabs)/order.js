@@ -156,12 +156,12 @@ export default function OrderScreen() {
                     router.push({
                       pathname: '/receipt',
                       params: {
-                        serviceName: order.businessName,
+                        serviceName: order.serviceName || order.businessName,
                         totalPrice: displayPrice,
                         pricePerUnit: String(order.pricePerUnit || 0),
                         unit: order.unit || '/kilo',
                         amount: String(order.items),
-                        serviceTotal: displayPrice,
+                        serviceTotal: String(order.serviceTotal || order.finalPrice || displayPrice),
                         deliveryFee: String(order.deliveryFee || 0),
                         expressFee: String(order.expressFee || 0),
                         isPickup: String(order.isPickup || false),
@@ -171,6 +171,15 @@ export default function OrderScreen() {
                         paymentMethod: order.paymentMethod || '',
                         realWeight: String(order.realWeight || order.items),
                         pickupAddress: order.pickupAddress || '',
+                        potongExtra: String(order.potongExtra || 0),
+                        potongNote: order.potongNote || '',
+                        eta: order.eta || '',
+                        // Preferences
+                        prefDetergent: order.prefDetergent || '',
+                        prefPerfume: order.prefPerfume || '',
+                        prefPerfumeEmoji: order.prefPerfumeEmoji || '',
+                        prefFragranceLevel: String(order.prefFragranceLevel || 0),
+                        prefInstructions: order.prefInstructions || '',
                       },
                     });
                   }}

@@ -204,7 +204,7 @@ export default function TrackOrderScreen() {
             resizeMode="cover"
           />
           <View style={styles.personOverlay}>
-            <Image source={{ uri: 'https://i.pravatar.cc/80?img=8' }} style={styles.personAvatar} />
+            <Image source={{ uri: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&q=80' }} style={styles.personAvatar} />
             <View style={styles.personInfo}>
               <Text style={styles.personName}>Budi Santoso</Text>
               <Text style={styles.personRole}>Petugas Laundry</Text>

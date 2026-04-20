@@ -157,7 +157,7 @@ export const conversations = [
     lastMessage: 'Halo kak, pesanan Anda sudah diterima. Saat ini sedang saya proses...',
     time: '15:46',
     unread: 1,
-    avatar: 'https://i.pravatar.cc/80?img=8',
+    avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&q=80',
     online: true,
     messages: [
       {
@@ -175,8 +175,8 @@ export const conversations = [
     lastMessage: 'Pesanan Anda sudah masuk dan sedang kami kerjakan segera.',
     time: '09:30',
     unread: 0,
-    avatar: 'https://i.pravatar.cc/80?img=15',
-    online: false,
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80',
+    online: true,
     messages: [],
   },
   {
@@ -186,7 +186,7 @@ export const conversations = [
     lastMessage: 'Halo kak, saya sedang di jalan ya.',
     time: '12:00',
     unread: 0,
-    avatar: 'https://i.pravatar.cc/80?img=11',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
     online: true,
     messages: [],
   },
@@ -197,7 +197,7 @@ export const conversations = [
     lastMessage: 'Halo! Ada yang bisa kami bantu? 😊',
     time: '',
     unread: 1,
-    avatar: 'https://i.pravatar.cc/80?img=32',
+    avatar: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=200&q=80',
     online: true,
     messages: [
       {
@@ -268,7 +268,7 @@ export function startOrderSimulation(orderData, onDone) {
   // Tambahkan pesanan baru ke orderHistory
   const newOrderHistoryEntry = {
     id: newOrderId,
-    businessName: 'Kinclong Laundry',
+    businessName: orderData.businessName || 'Kinclong Laundry', // Use dynamic name if provided
     date: 'Baru Saja',
     status: STATUS_STEPS[0].status,
     items: estimatedWeight,
@@ -281,11 +281,21 @@ export function startOrderSimulation(orderData, onDone) {
     // Data asli untuk struk:
     deliveryFee: orderData.deliveryFee || 0,
     expressFee: orderData.expressFee || 0,
-    isExpress: orderData.expressFee > 0,
-    isPickup: orderData.deliveryFee > 0,
+    isExpress: orderData.isExpress === 'true' || orderData.expressFee > 0,
+    isPickup: orderData.isPickup === 'true' || orderData.deliveryFee > 0,
     unit: orderData.unit || '/kilo',
     pricePerUnit: orderData.pricePerUnit || 8000,
     pickupAddress: orderData.pickupAddress || '',
+    serviceName: orderData.serviceName || 'Layanan Binatu',
+    potongExtra: orderData.potongExtra || 0,
+    potongNote: orderData.potongNote || '',
+    eta: orderData.eta || '',
+    // Preserve Cleaning Preferences
+    prefDetergent: orderData.prefDetergent,
+    prefPerfume: orderData.prefPerfume,
+    prefPerfumeEmoji: orderData.prefPerfumeEmoji,
+    prefFragranceLevel: orderData.prefFragranceLevel,
+    prefInstructions: orderData.prefInstructions,
   };
   orderHistory.unshift(newOrderHistoryEntry);
   _notify();
@@ -334,18 +344,18 @@ export function startOrderSimulation(orderData, onDone) {
             entry4.date = `Hari ini, ${dateStr}`;
           }
 
-          // Tambah ke recentLaundry sebagai item teratas
+          // Tambah ke recentLaundry sebagai item teratas (Sertakan SEMUA metadata)
           recentLaundry.unshift({
+            ...newOrderHistoryEntry, // Ambil semua metadata awal
             id: newOrderId,
-            businessName: 'Kinclong Laundry',
             date: `Hari ini, ${dateStr}`,
             status: 'Selesai',
-            eta: null,
-            startTime: timeStr,
-            endTime: timeStr,
-            nextStatus: null,
-            selectedServices: orderData.selectedServices || [orderData.serviceName],
+            eta: orderData.eta || null,
             totalPriceNum: finalPrice,
+            realWeight: realWeight,
+            finalPrice: finalPrice,
+            paid: true,
+            selectedServices: orderData.selectedServices || [orderData.serviceName],
             person: null,
           });
 

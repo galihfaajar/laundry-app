@@ -1,4 +1,28 @@
 import React, { useState, useCallback } from 'react';
+
+// ─── Cleaning Preference Data ──────────────────────────────────────────────────
+const DETERGENT_OPTIONS = [
+  { id: 'regular',        label: 'Reguler',         icon: 'water-outline' },
+  { id: 'baby',           label: 'Bayi',            icon: 'heart-outline' },
+  { id: 'hypoallergenic', label: 'Hypoallergenic',  icon: 'leaf-outline' },
+  { id: 'premium',        label: 'Premium',         icon: 'star-outline' },
+];
+
+const PERFUME_OPTIONS = [
+  { id: 'fresh_cotton', label: 'Fresh Cotton',  emoji: '🌿' },
+  { id: 'lavender',     label: 'Lavender',      emoji: '💜' },
+  { id: 'rose',         label: 'Rose',          emoji: '🌹' },
+  { id: 'sakura',       label: 'Sakura',        emoji: '🌸' },
+  { id: 'citrus',       label: 'Citrus',        emoji: '🍋' },
+  { id: 'none',         label: 'Tanpa Wangi',   emoji: '🚫' },
+];
+
+const SPECIAL_INSTRUCTIONS = [
+  { id: 'no_iron',        label: 'Jangan Disetrika', icon: 'close-circle-outline' },
+  { id: 'hang_dry',       label: 'Gantung Saja',     icon: 'git-network-outline' },
+  { id: 'wash_separate',  label: 'Cuci Terpisah',    icon: 'layers-outline' },
+  { id: 'cold_water',     label: 'Air Dingin',       icon: 'snow-outline' },
+];
 import {
   View,
   Text,
@@ -49,6 +73,18 @@ export default function CartScreen() {
   const params = useLocalSearchParams();
   const [isPickup, setIsPickup] = useState(false); // default: Antar ke Toko (Gratis)
   const [isExpress, setIsExpress] = useState(false);
+
+  // ─── Cleaning Preferences State ───────────────────────────────────────────
+  const [detergent, setDetergent]               = useState('regular');
+  const [perfume, setPerfume]                   = useState('fresh_cotton');
+  const [fragranceLevel, setFragranceLevel]     = useState(3); // 1–5
+  const [specialInstructions, setSpecialInstructions] = useState([]);
+
+  const toggleInstruction = (id) => {
+    setSpecialInstructions((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
   const { Colors } = useTheme();
   const styles = useStyles(Colors);
 
@@ -260,6 +296,125 @@ export default function CartScreen() {
           </View>
         </View>
 
+        {/* ─── Preferensi Cucian ─── */}
+        <Text style={styles.sectionTitle}>Preferensi Cucian</Text>
+        <View style={styles.prefCard}>
+
+          {/* Jenis Deterjen */}
+          <View style={styles.prefSectionLabel}>
+            <Ionicons name="water-outline" size={15} color={Colors.textSecondary} />
+            <Text style={styles.prefSectionLabelText}>Jenis Deterjen</Text>
+          </View>
+          <View style={styles.prefChipsRow}>
+            {DETERGENT_OPTIONS.map((opt) => {
+              const active = detergent === opt.id;
+              return (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[styles.prefChip, active && styles.prefChipActive]}
+                  onPress={() => setDetergent(opt.id)}
+                  activeOpacity={0.75}
+                >
+                  <Ionicons
+                    name={opt.icon}
+                    size={13}
+                    color={active ? (Colors.accentText || '#000') : Colors.textSecondary}
+                  />
+                  <Text style={[styles.prefChipText, active && styles.prefChipTextActive]}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <View style={styles.prefDivider} />
+
+          {/* Pilihan Parfum */}
+          <View style={styles.prefSectionLabel}>
+            <Ionicons name="sparkles-outline" size={15} color={Colors.textSecondary} />
+            <Text style={styles.prefSectionLabelText}>Pilihan Parfum</Text>
+          </View>
+          <View style={styles.prefChipsRow}>
+            {PERFUME_OPTIONS.map((opt) => {
+              const active = perfume === opt.id;
+              return (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[styles.prefChip, active && styles.prefChipActive, styles.perfumeChip]}
+                  onPress={() => setPerfume(opt.id)}
+                  activeOpacity={0.75}
+                >
+                  <Text style={styles.perfumeEmoji}>{opt.emoji}</Text>
+                  <Text style={[styles.prefChipText, active && styles.prefChipTextActive]}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Tingkat Keharuman — hanya tampil jika bukan Tanpa Wangi */}
+          {perfume !== 'none' && (
+            <>
+              <View style={[styles.prefSectionLabel, { marginTop: 14 }]}>
+                <Ionicons name="cellular-outline" size={15} color={Colors.textSecondary} />
+                <Text style={styles.prefSectionLabelText}>Tingkat Keharuman</Text>
+                <View style={styles.fragranceLevelBadge}>
+                  <Text style={styles.fragranceLevelBadgeText}>
+                    {['Ringan','Sedang','Wangi','Kuat','Sangat Kuat'][fragranceLevel - 1]}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.fragranceLevelBar}>
+                {[1,2,3,4,5].map((lvl) => (
+                  <TouchableOpacity
+                    key={lvl}
+                    style={[styles.fragranceSegment, fragranceLevel >= lvl && styles.fragranceSegmentActive]}
+                    onPress={() => setFragranceLevel(lvl)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[styles.fragranceSegmentNum, fragranceLevel >= lvl && styles.fragranceSegmentNumActive]}>
+                      {lvl}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
+
+          <View style={styles.prefDivider} />
+
+          {/* Instruksi Khusus */}
+          <View style={styles.prefSectionLabel}>
+            <Ionicons name="clipboard-outline" size={15} color={Colors.textSecondary} />
+            <Text style={styles.prefSectionLabelText}>Instruksi Khusus</Text>
+            <Text style={styles.prefOptionalBadge}>opsional</Text>
+          </View>
+          <View style={styles.prefChipsRow}>
+            {SPECIAL_INSTRUCTIONS.map((opt) => {
+              const active = specialInstructions.includes(opt.id);
+              return (
+                <TouchableOpacity
+                  key={opt.id}
+                  style={[styles.prefChip, active && styles.prefChipActive]}
+                  onPress={() => toggleInstruction(opt.id)}
+                  activeOpacity={0.75}
+                >
+                  <Ionicons
+                    name={active ? 'checkmark-circle' : opt.icon}
+                    size={13}
+                    color={active ? (Colors.accentText || '#000') : Colors.textSecondary}
+                  />
+                  <Text style={[styles.prefChipText, active && styles.prefChipTextActive]}>
+                    {opt.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         {/* ─── Rincian Harga ─── */}
         <Text style={styles.sectionTitle}>Rincian Harga</Text>
         <View style={styles.summaryCard}>
@@ -389,6 +544,15 @@ export default function CartScreen() {
                 isExpress: String(isExpress),
                 expressFee: String(expressFee),
                 eta: isExpress ? expressEta : standardEta,
+                // Cleaning Preferences
+                prefDetergent: DETERGENT_OPTIONS.find(d => d.id === detergent)?.label || detergent,
+                prefPerfume: PERFUME_OPTIONS.find(p => p.id === perfume)?.label || perfume,
+                prefPerfumeEmoji: PERFUME_OPTIONS.find(p => p.id === perfume)?.emoji || '',
+                prefFragranceLevel: perfume !== 'none' ? String(fragranceLevel) : '0',
+                prefInstructions: specialInstructions
+                  .map(id => SPECIAL_INSTRUCTIONS.find(i => i.id === id)?.label)
+                  .filter(Boolean)
+                  .join(', '),
               },
             });
           }}
@@ -784,5 +948,124 @@ const useStyles = (Colors) => StyleSheet.create({
     height: 10,
     borderRadius: 5,
     backgroundColor: Colors.accent,
+  },
+
+  // ─── Cleaning Preferences Styles ──────────────────────────────────────────
+  prefCard: {
+    backgroundColor: Colors.card,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  prefSectionLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+  },
+  prefSectionLabelText: {
+    color: Colors.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+    flex: 1,
+  },
+  prefOptionalBadge: {
+    fontSize: 10,
+    color: Colors.textSecondary,
+    backgroundColor: Colors.bg,
+    borderRadius: 6,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  prefChipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 4,
+  },
+  prefChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: Colors.bg,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  prefChipActive: {
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
+  },
+  prefChipText: {
+    color: Colors.textSecondary,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  prefChipTextActive: {
+    color: Colors.accentText || '#000',
+  },
+  perfumeChip: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    gap: 3,
+    minWidth: 72,
+  },
+  perfumeEmoji: {
+    fontSize: 20,
+    lineHeight: 24,
+  },
+  prefDivider: {
+    height: 1,
+    backgroundColor: Colors.border,
+    marginVertical: 14,
+  },
+  fragranceLevelBadge: {
+    backgroundColor: Colors.accent + '20',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: Colors.accent + '60',
+  },
+  fragranceLevelBadgeText: {
+    color: Colors.accent,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  fragranceLevelBar: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 4,
+  },
+  fragranceSegment: {
+    flex: 1,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: Colors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  fragranceSegmentActive: {
+    backgroundColor: Colors.accent,
+    borderColor: Colors.accent,
+  },
+  fragranceSegmentNum: {
+    color: Colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  fragranceSegmentNumActive: {
+    color: Colors.accentText || '#000',
   },
 });

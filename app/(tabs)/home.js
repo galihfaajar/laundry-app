@@ -221,17 +221,31 @@ export default function HomeScreen() {
               onPress={() => router.push({
                 pathname: '/receipt',
                 params: {
-                  serviceName: Array.isArray(item.selectedServices)
+                  serviceName: item.serviceName || (Array.isArray(item.selectedServices)
                     ? item.selectedServices.join(' + ')
-                    : (item.selectedServices || item.businessName),
-                  totalPrice: String(item.totalPriceNum || 0),
-                  serviceTotal: String(item.totalPriceNum || 0),
-                  pricePerUnit: '0',
-                  unit: '/kilo',
-                  amount: '1',
-                  deliveryFee: '0',
-                  isPickup: 'false',
+                    : (item.selectedServices || item.businessName)),
+                  totalPrice: String(item.totalPriceNum || item.finalPrice || 0),
+                  serviceTotal: String(item.serviceTotal || item.finalPrice || 0),
+                  pricePerUnit: String(item.pricePerUnit || 0),
+                  unit: item.unit || '/kilo',
+                  amount: String(item.items || 1),
+                  deliveryFee: String(item.deliveryFee || 0),
+                  expressFee: String(item.expressFee || 0),
+                  isPickup: String(item.isPickup || false),
+                  isExpress: String(item.isExpress || false),
                   fromHistory: 'true',
+                  isCompleted: 'true',
+                  realWeight: String(item.realWeight || item.items || 1),
+                  pickupAddress: item.pickupAddress || '',
+                  potongExtra: String(item.potongExtra || 0),
+                  potongNote: item.potongNote || '',
+                  eta: item.eta || '',
+                  // Preferences
+                  prefDetergent: item.prefDetergent || '',
+                  prefPerfume: item.prefPerfume || '',
+                  prefPerfumeEmoji: item.prefPerfumeEmoji || '',
+                  prefFragranceLevel: String(item.prefFragranceLevel || 0),
+                  prefInstructions: item.prefInstructions || '',
                 },
               })}
             />

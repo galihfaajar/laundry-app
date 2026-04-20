@@ -102,6 +102,14 @@ export default function ReceiptScreen() {
   const paymentMethod = params.paymentMethod || '';
   const realWeight    = parseFloat(params.realWeight) || amount;
 
+  // ─── Cleaning Preferences ────────────────────────────────────────────────
+  const prefDetergent      = params.prefDetergent;
+  const prefPerfume        = params.prefPerfume;
+  const prefPerfumeEmoji   = params.prefPerfumeEmoji;
+  const prefFragranceLevel = parseInt(params.prefFragranceLevel) || 0;
+  const prefInstructions   = params.prefInstructions;
+  const hasPrefs           = prefDetergent || prefPerfume || prefInstructions;
+
   // Tanggal & nomor pesanan
   const now     = new Date();
   const dateStr = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -251,11 +259,35 @@ export default function ReceiptScreen() {
 
           <View style={styles.divider} />
 
+          {/* ─── Preferensi Cucian ─── */}
+          {hasPrefs && (
+            <>
+              <Text style={styles.sectionLabel}>Preferensi</Text>
+              {prefDetergent && (
+                <ReceiptRow label="Deterjen" value={prefDetergent} dimLabel />
+              )}
+              {prefPerfume && (
+                <ReceiptRow
+                  label={`Parfum ${prefPerfumeEmoji || ''}`}
+                  value={`${prefPerfume}${prefFragranceLevel > 0 ? ` (Level ${prefFragranceLevel})` : ''}`}
+                  dimLabel
+                />
+              )}
+              {prefInstructions && (
+                <View style={styles.instructionsBox}>
+                  <Text style={styles.instructionsLabel}>Instruksi Khusus:</Text>
+                  <Text style={styles.instructionsText}>{prefInstructions}</Text>
+                </View>
+              )}
+              <View style={styles.divider} />
+            </>
+          )}
+
           {/* ─── Petugas ─── */}
           <Text style={styles.sectionLabel}>Petugas Laundry</Text>
           <View style={styles.contactRow}>
             <Image
-              source={{ uri: 'https://i.pravatar.cc/80?img=8' }}
+              source={{ uri: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=200&q=80' }}
               style={styles.contactAvatar}
             />
             <View style={{ flex: 1 }}>
@@ -609,4 +641,26 @@ const useStyles = (Colors) => StyleSheet.create({
     elevation: 6,
   },
   ctaText: { color: Colors.accentText || '#000', fontSize: 16, fontWeight: '700' },
+
+  // ─── Instructions Style ───────────────────────────────────────────────────
+  instructionsBox: {
+    marginTop: 8,
+    padding: 10,
+    backgroundColor: Colors.bg,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  instructionsLabel: {
+    color: Colors.textPrimary,
+    fontSize: 11,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  instructionsText: {
+    color: Colors.textSecondary,
+    fontSize: 12,
+    lineHeight: 18,
+    fontStyle: 'italic',
+  },
 });
